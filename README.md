@@ -1,56 +1,84 @@
-# count-files
+toml2json
+=========
 
-A simple command line tool to count files by extension.
+[![CI](https://github.com/woodruffw/toml2json/actions/workflows/ci.yml/badge.svg)](https://github.com/woodruffw/toml2json/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/toml2json)](https://crates.io/crates/toml2json)
 
-[![Rust](https://github.com/yinguobing/count-files/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/yinguobing/count-files/actions/workflows/rust.yml)
-
-## How to use
-Open a terminal and run:
-```bash
-count-files /path/to/target_dir
-```
-
-Output sample:
-```bash
-Done in 7 seconds.
-+-----------+---------+------------+
-| File type |   Count | Total size |
-+==================================+
-| jpg       | 1322497 |  112.48GiB |
-|-----------+---------+------------|
-| txt       |  372302 |   97.68MiB |
-|-----------+---------+------------|
-| JPG       |     147 |   26.04MiB |
-|-----------+---------+------------|
-| bmp       |     130 |  714.12MiB |
-|-----------+---------+------------|
-| tar       |       9 |  114.88GiB |
-+-----------+---------+------------+
-```
+A command-line tool that converts TOML to JSON. Nothing more, nothing less.
 
 ## Installation
-If you have Rust installed, then use cargo:
 
-```bash
-cargo install count-files
+### Cargo
+
+```
+$ cargo install toml2json
 ```
 
-Or, you can build it manually following the next section, then copy the executable file into the `$PATH` directory.
+### Nixpkgs
 
-```bash
-# Install for all users on Ubuntu.
-sudo cp target/release/count-files /usr/local/bin
+```
+nix-env --install toml2json
 ```
 
-## Building
-count-files is written in Rust, you need to [install Rust](https://www.rust-lang.org/tools/install) to compile it.
 
-To build:
+## Usage
+
+Convert TOML on `stdin` to JSON, filtering it through `jq`:
 
 ```bash
-git clone https://github.com/yinguobing/count-files.git
-cd count-files
-cargo build --release
+$ toml2json <<< 'wow = "amazing"' | jq
 ```
 
-The executable file `count-files` could be found in `target/release` directory.
+Produces:
+
+```json
+{
+  "wow": "amazing"
+}
+```
+
+Convert TOML from a file and pretty-print it without `jq`:
+
+```bash
+$ toml2json --pretty ~/.config/kbs2/kbs2.conf
+```
+
+Produces:
+
+```json
+{
+  "age-backend": "RageLib",
+  "error-hook": "~/.config/kbs2/hooks/error-hook-notify",
+  "keyfile": "REDACTED-GO-AWAY",
+  "public-key": "REDACTED-GO-AWAY",
+  "reentrant-hooks": false,
+  "store": "~/.kbs2-store",
+  "wrapped": true,
+  "generators": [
+    {
+      "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789(){}[]-_+=",
+      "length": 16,
+      "name": "default"
+    }
+  ],
+  "commands": {
+    "edit": {
+      "editor": "subl -w",
+      "post-hook": "~/.config/kbs2/hooks/push-repo"
+    },
+    "new": {
+      "generate-on-empty": true,
+      "post-hook": "~/.config/kbs2/hooks/push-repo"
+    },
+    "pass": {
+      "clear-after": true,
+      "clear-hook": "~/.config/kbs2/hooks/pass-clear-notify",
+      "clipboard-duration": 10,
+      "x11-clipboard": "Clipboard"
+    },
+    "rm": {
+      "post-hook": "~/.config/kbs2/hooks/push-repo"
+    }
+  }
+}
+
